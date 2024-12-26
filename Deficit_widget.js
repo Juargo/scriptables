@@ -89,7 +89,7 @@ column.layoutVertically()
 
 const titleText = column.addText("DEFICIT")
 titleText.font = Font.mediumRoundedSystemFont(13)
-titleText.color= new Color("#2B72E3")
+titleText.textColor= new Color("#2B72E3")
 
 const deficitCount = column.addText(partes[1])
 deficitCount.font = Font.mediumRoundedSystemFont(22)
