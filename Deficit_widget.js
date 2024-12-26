@@ -30,6 +30,14 @@ const detailFontSize = 36
 const MAXIMO = 1000
 const CANVAS_SIZE = new Size(100, 100)
 
+// Nombre base de los archivos. Ajusta a tus nombres reales.
+let images = [
+    "flame0.png", // 0 - 25 %
+    "flame1.png", // 25 - 50 %
+    "flame2.png", // 50 - 75 %
+    "flame3.png", // 75 - 100 %
+  ]
+
 // Nombre del SF Symbol que usarás como base
 const SYMBOL_NAME = "flame.fill"
 
@@ -51,8 +59,25 @@ if (partes[1] < 0) {
     //----------------------------------------------------
     // 5) Generar la imagen final con relleno parcial
     //----------------------------------------------------
-    let tinted = createTintedSymbol(SYMBOL_NAME, CANVAS_SIZE, FILL_COLOR)
-    icon = partialFill(tinted, ratio)
+    let stage = getFlameStage(ratio)
+    let flameFileName = images[stage]
+    //----------------------------------------------------
+    // 5) Cargar la imagen desde la carpeta de Scriptable
+    //----------------------------------------------------
+    let fm = FileManager.iCloud()
+    // - Si guardaste los PNG en la carpeta local de Scriptable:
+    //   let fm = FileManager.local()
+
+    // Ruta para el archivo
+    let path = fm.joinPath(fm.documentsDirectory(), flameFileName)
+
+    // En iCloud, asegurarnos de que esté descargado
+    if (!fm.isFileDownloaded(path)) {
+    await fm.downloadFileFromiCloud(path)
+    }
+
+    // Leer la imagen
+    icon = fm.readImage(path)
    
   }
 const iconImg = row.addImage(icon)
@@ -84,46 +109,22 @@ widget.backgroundColor = new Color("#e1ecfe")
 Script.setWidget(widget)
 Script.complete()
 
-function createTintedSymbol(symbolName, size, color) {
-    let ctx = new DrawContext()
-    ctx.size = size
-    ctx.opaque = false
-    
-    // Ponemos el color de “relleno”
-    ctx.setFillColor(color)
-    
-    // Cargamos el SF Symbol
-    let sfSymbol = SFSymbol.named(symbolName)
-    let sfImage  = sfSymbol.image
-    
-    // "drawTemplateImageInRect" dibuja usando la alpha del símbolo
-    // como máscara, aplicando el color que definimos con setFillColor
-    ctx.drawTemplateImageInRect(sfImage, new Rect(0, 0, size.width, size.height))
-    
-    return ctx.getImage()
-  }
+//----------------------------------------------------
+function getFlameStage(ratio) {
+  // ratio ∈ [0,1]
+  // Indica cuántos “tramos” hay
+  //   0   -> flame0
+  //   <0.25  -> flame0
+  //   <0.50  -> flame1
+  //   <0.75  -> flame2
+  //   ≤1     -> flame3
+  
+  if (ratio < 0.25) return 0
+  else if (ratio < 0.50) return 1
+  else if (ratio < 0.75) return 2
+  else return 3
+}
 
-  function partialFill(img, ratio) {
-    // ratio debe ir de 0 a 1
-    // Si valor <= 0 => ratio=0 => nada relleno
-    // Si valor >= max => ratio=1 => relleno total
-    
-    let ctx = new DrawContext()
-    ctx.size = img.size
-    ctx.opaque = false
-    
-    // Calculamos cuántos pixeles se rellenan
-    let fillHeight = img.size.height * ratio
-    let y = img.size.height - fillHeight
-    
-    // Definimos la región a dibujar (sólo la parte inferior)
-    ctx.clipRect(new Rect(0, y, img.size.width, fillHeight))
-    
-    // Dibujamos la imagen tinteada dentro de esa región
-    ctx.drawImageInRect(img, new Rect(0, 0, img.size.width, img.size.height))
-    
-    return ctx.getImage()
-  }
 
   function getRatio(valor, max) {
     if (valor <= 0)   { return 0 }
