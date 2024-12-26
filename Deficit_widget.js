@@ -27,6 +27,7 @@ console.log(partes);
 let widget = new ListWidget();
 const titleFontSize = 12
 const detailFontSize = 36
+const MAXIMO = 1000
 const CANVAS_SIZE = new Size(100, 100)
 
 // Nombre del SF Symbol que usarás como base
@@ -45,7 +46,7 @@ if (partes[1] < 0) {
     let symbol = SFSymbol.named(IconName)
     icon = symbol.image
   } else {
-    let ratio = getRatio(VALOR, MAXIMO)
+    let ratio = getRatio(partes[1], MAXIMO)
 
     //----------------------------------------------------
     // 5) Generar la imagen final con relleno parcial
