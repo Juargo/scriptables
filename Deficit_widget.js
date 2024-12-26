@@ -89,11 +89,11 @@ column.layoutVertically()
 
 const titleText = column.addText("DEFICIT")
 titleText.font = Font.mediumRoundedSystemFont(13)
-
+titleText.color= new Color("#2B72E3")
 
 const deficitCount = column.addText(partes[1])
 deficitCount.font = Font.mediumRoundedSystemFont(22)
-deficitCount.textColor = new Color("#cfddf4")
+deficitCount.textColor = new Color("#15376E")
 widget.addSpacer(4)
 
 const row2 = widget.addStack()
@@ -101,6 +101,7 @@ row2.layoutVertically()
 
 const fecha = row2.addText(partes[0])
 fecha.font = Font.regularSystemFont(11)
+fecha.textColor = new Color("#2B72E3")
 
 // CREAT WIDGET
 widget.backgroundColor = new Color("#e1ecfe")
